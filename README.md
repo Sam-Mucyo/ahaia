@@ -1,4 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InstaLearn - Social Media Style Learning Platform
+
+InstaLearn is a Next.js web application that transforms educational content into engaging, TikTok/Instagram-style short-form lessons. Instead of traditional video content, InstaLearn uses animated text with various formatting styles (bold, italic, etc.) to create an engaging learning experience that mimics the feel of social media reels.
+
+## Features
+
+- **Content Transformation**: Paste any educational content and convert it into bite-sized, engaging lessons
+- **Reel-Style Presentation**: Content is presented in a format similar to TikTok/Instagram reels
+- **Animated Text**: Dynamic text animations with varied styling to maintain engagement
+- **Interactive Controls**: Play, pause, and navigate through learning content
+- **Responsive Design**: Works on both desktop and mobile devices
 
 ## Getting Started
 
