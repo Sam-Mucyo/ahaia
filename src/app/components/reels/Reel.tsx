@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaHeart, FaComment, FaShare, FaBookmark } from 'react-icons/fa';
+import { FaThumbsUp, FaThumbsDown, FaRobot, FaShare, FaBookmark } from 'react-icons/fa';
 import { useReelStore, Reel as ReelType } from '@/app/store/useReelStore';
 
 interface ReelProps {
@@ -10,7 +10,7 @@ interface ReelProps {
 
 const Reel: React.FC<ReelProps> = ({ reel, isActive }) => {
   const [progress, setProgress] = useState(0);
-  const [liked, setLiked] = useState(false);
+  const [feedback, setFeedback] = useState<'like' | 'dislike' | null>(null);
   const [bookmarked, setBookmarked] = useState(false);
   const { isPlaying, nextReel } = useReelStore();
   
@@ -101,51 +101,76 @@ const Reel: React.FC<ReelProps> = ({ reel, isActive }) => {
         </motion.div>
       </AnimatePresence>
       
-      {/* Interaction buttons */}
+      {/* AI Feedback and Interaction buttons */}
       <div className="absolute right-4 bottom-20 flex flex-col space-y-6">
+        {/* Like/Dislike buttons for AI feedback */}
+        <div className="flex flex-col items-center space-y-2">
+          <button 
+            onClick={() => setFeedback(feedback === 'like' ? null : 'like')}
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800/40 hover:bg-gray-700/60 transition-colors"
+            aria-label="Like this content"
+          >
+            <FaThumbsUp 
+              className={`text-xl ${feedback === 'like' ? 'text-green-500' : 'text-white/70'} transition-colors`} 
+            />
+          </button>
+          
+          <button 
+            onClick={() => setFeedback(feedback === 'dislike' ? null : 'dislike')}
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800/40 hover:bg-gray-700/60 transition-colors"
+            aria-label="Dislike this content"
+          >
+            <FaThumbsDown 
+              className={`text-xl ${feedback === 'dislike' ? 'text-red-500' : 'text-white/70'} transition-colors`} 
+            />
+          </button>
+          
+          <span className="text-xs text-center text-white/70">
+            AI Feedback
+          </span>
+        </div>
+        
+        {/* AI Conversation button */}
         <button 
-          onClick={() => setLiked(!liked)}
           className="flex flex-col items-center"
+          aria-label="Start AI conversation"
         >
-          <FaHeart 
-            className={`text-2xl ${liked ? 'text-red-500' : 'text-white'} transition-colors`} 
-          />
-          <span className="text-xs mt-1">
-            {Math.floor(Math.random() * 1000)}
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-blue-500/50 to-purple-500/50 hover:from-blue-600/70 hover:to-purple-600/70 transition-colors">
+            <FaRobot className="text-xl text-white/80" />
+          </div>
+          <span className="text-xs mt-1 text-center text-white/70">
+            Ask AI
           </span>
         </button>
         
         <button className="flex flex-col items-center">
-          <FaComment className="text-2xl text-white" />
-          <span className="text-xs mt-1">
-            {Math.floor(Math.random() * 100)}
-          </span>
-        </button>
-        
-        <button className="flex flex-col items-center">
-          <FaShare className="text-2xl text-white" />
-          <span className="text-xs mt-1">Share</span>
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800/40 hover:bg-gray-700/60 transition-colors">
+            <FaShare className="text-xl text-white/70" />
+          </div>
+          <span className="text-xs mt-1 text-white/70">Share</span>
         </button>
         
         <button 
           onClick={() => setBookmarked(!bookmarked)}
           className="flex flex-col items-center"
         >
-          <FaBookmark 
-            className={`text-2xl ${bookmarked ? 'text-yellow-400' : 'text-white'} transition-colors`} 
-          />
-          <span className="text-xs mt-1">Save</span>
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800/40 hover:bg-gray-700/60 transition-colors">
+            <FaBookmark 
+              className={`text-xl ${bookmarked ? 'text-yellow-400' : 'text-white/70'} transition-colors`} 
+            />
+          </div>
+          <span className="text-xs mt-1 text-white/70">Save</span>
         </button>
       </div>
       
       {/* User info (simulated) */}
       <div className="absolute left-4 bottom-4 flex items-center">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500/60 to-pink-500/60 flex items-center justify-center text-white font-bold">
           IL
         </div>
         <div className="ml-2">
-          <p className="font-bold text-sm">InstaLearn</p>
-          <p className="text-xs text-gray-300">Learning made engaging</p>
+          <p className="font-bold text-sm text-white/90">InstaLearn</p>
+          <p className="text-xs text-white/60">Learning made engaging</p>
         </div>
       </div>
     </div>
