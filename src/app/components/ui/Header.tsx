@@ -14,7 +14,7 @@ const Header: React.FC = () => {
         <div className="flex items-center space-x-2">
           <FaGraduationCap className="text-2xl text-[#ff3040]" />
           <h1 className="text-xl font-bold bg-gradient-to-r from-[#ff3040] to-[#833ab4] text-transparent bg-clip-text">
-            InstaLearn
+            Ahaia
           </h1>
         </div>
         <div className="text-sm text-gray-400">

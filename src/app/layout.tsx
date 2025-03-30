@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "InstaLearn - Social Learning Platform",
+  title: "Ahaia - Social Learning Platform",
   description: "Transform content into engaging TikTok/Instagram style learning reels",
 };
 

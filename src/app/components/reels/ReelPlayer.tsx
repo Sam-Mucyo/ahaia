@@ -52,7 +52,7 @@ const ReelPlayer: React.FC = () => {
       <div className="absolute top-0 left-0 right-0 h-16 flex items-center justify-between px-4 z-10">
         <div className="flex items-center">
           <h1 className="text-xl font-bold bg-gradient-to-r from-[#ff3040] to-[#833ab4] text-transparent bg-clip-text">
-            InstaLearn
+            Ahaia
           </h1>
         </div>
         <button

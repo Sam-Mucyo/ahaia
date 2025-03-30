@@ -1,6 +1,6 @@
-# InstaLearn - Social Media Style Learning Platform
+# Ahaia - Social Media Style Learning Platform
 
-InstaLearn is a Next.js web application that transforms educational content into engaging, TikTok/Instagram-style short-form lessons. Instead of traditional video content, InstaLearn uses animated text with various formatting styles (bold, italic, etc.) to create an engaging learning experience that mimics the feel of social media reels.
+Ahaia is a Next.js web application that transforms educational content into engaging, TikTok/Instagram-style short-form lessons. Instead of traditional video content, Ahaia uses animated text with various formatting styles (bold, italic, etc.) to create an engaging learning experience that mimics the feel of social media reels.
 
 ## Features
 

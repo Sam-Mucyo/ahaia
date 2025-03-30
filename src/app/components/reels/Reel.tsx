@@ -223,10 +223,10 @@ const Reel: React.FC<ReelProps> = ({ reel, isActive }) => {
       {/* User info (simulated) */}
       <div className="absolute left-4 bottom-4 flex items-center">
         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500/60 to-pink-500/60 flex items-center justify-center text-white font-bold">
-          IL
+          AH
         </div>
         <div className="ml-2">
-          <p className="font-bold text-sm text-white/90">InstaLearn</p>
+          <p className="font-bold text-sm text-white/90">Ahaia</p>
           <p className="text-xs text-white/60">Learning made engaging</p>
         </div>
       </div>

@@ -41,7 +41,7 @@ export default function Home() {
       
       <footer className="py-6 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} InstaLearn. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Ahaia. All rights reserved.</p>
         </div>
       </footer>
       
