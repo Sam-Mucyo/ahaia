@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/ui/Header';
 import Navigation from '../components/ui/Navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaSpinner, FaCheck, FaTimes, FaArrowRight, FaPlus } from 'react-icons/fa';
 
 interface Option {
@@ -291,11 +292,17 @@ export default function QuizzesPage() {
                     <div className="mb-6">
                       <h3 className="text-xl font-medium mb-2">{currentQuestion.text}</h3>
                       {currentQuestion.image_path && (
-                        <div className="mb-4">
-                          <img 
-                            src={`http://localhost:5000/${currentQuestion.image_path}`} 
-                            alt="Question" 
-                            className="max-w-full rounded-lg"
+                        <div className="mb-4 relative w-full h-64 rounded-lg overflow-hidden">
+                          <Image 
+                            src={currentQuestion.image_path.startsWith('http') 
+                              ? currentQuestion.image_path 
+                              : `http://localhost:5000${currentQuestion.image_path.startsWith('/') ? '' : '/'}${currentQuestion.image_path}`
+                            } 
+                            alt="Question image" 
+                            className="rounded-lg object-contain"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority
                           />
                         </div>
                       )}

@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '../../components/ui/Header';
 import Navigation from '../../components/ui/Navigation';
-import { FaPlus, FaTrash, FaCheck, FaArrowLeft } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaCheck, FaArrowLeft, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 interface Topic {
@@ -33,6 +34,11 @@ export default function CreateQuizPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePath, setImagePath] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [externalImageUrl, setExternalImageUrl] = useState<string>('');
 
   // Fetch topics on component mount
   useEffect(() => {
@@ -121,6 +127,77 @@ export default function CreateQuizPage() {
     setOptions(newOptions);
   };
 
+  // Handle image upload
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+    if (!validTypes.includes(file.type)) {
+      setErrorMessage('Please upload a valid image (JPEG, PNG, or GIF)');
+      setTimeout(() => setErrorMessage(''), 3000);
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMessage('Image size should be less than 5MB');
+      setTimeout(() => setErrorMessage(''), 3000);
+      return;
+    }
+    
+    setImage(file);
+    
+    // Create a preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    
+    // Upload the image to the server
+    const uploadImage = async () => {
+      setIsUploading(true);
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const response = await fetch('http://localhost:5000/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          // Ensure the path is properly formatted
+          setImagePath(data.path);
+          console.log('Image uploaded successfully, path:', data.path);
+          setIsUploading(false);
+        } else {
+          const error = await response.json();
+          setErrorMessage(error.error || 'Failed to upload image');
+          setIsUploading(false);
+          setTimeout(() => setErrorMessage(''), 3000);
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        setErrorMessage('Failed to upload image');
+        setIsUploading(false);
+        setTimeout(() => setErrorMessage(''), 3000);
+      }
+    };
+    
+    uploadImage();
+  };
+  
+  const handleRemoveImage = () => {
+    setImage(null);
+    setImagePreview(null);
+    setImagePath(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -147,6 +224,9 @@ export default function CreateQuizPage() {
     
     setIsSubmitting(true);
     
+    // If external URL is provided, use it instead of uploaded image
+    const finalImagePath = externalImageUrl || imagePath;
+    
     try {
       const response = await fetch('http://localhost:5000/questions', {
         method: 'POST',
@@ -156,6 +236,7 @@ export default function CreateQuizPage() {
         body: JSON.stringify({
           text: questionText,
           topic_id: selectedTopic,
+          image_path: finalImagePath,
           lecture_reference: lectureReference || null,
           options: options,
         }),
@@ -171,6 +252,10 @@ export default function CreateQuizPage() {
           { text: '', is_correct: false, explanation: '' },
         ]);
         setLectureReference('');
+        setImage(null);
+        setImagePreview(null);
+        setImagePath(null);
+        setExternalImageUrl('');
         
         setTimeout(() => {
           setSuccessMessage('');
@@ -338,6 +423,100 @@ export default function CreateQuizPage() {
                 >
                   <FaPlus className="inline mr-2" /> Add Another Option
                 </button>
+              </div>
+              
+              {/* Image Upload */}
+              <div className="mb-6">
+                <label className="block text-gray-300 mb-2 font-medium">
+                  Question Image (Optional)
+                </label>
+                
+                <div className="space-y-4">
+                  {/* External Image URL Input */}
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-1">
+                      Enter an image URL:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="url"
+                        value={externalImageUrl}
+                        onChange={(e) => {
+                          setExternalImageUrl(e.target.value);
+                          // Clear uploaded image if URL is entered
+                          if (e.target.value && imagePreview) {
+                            handleRemoveImage();
+                          }
+                        }}
+                        placeholder="https://example.com/image.jpg"
+                        className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#ff3040] text-white"
+                        disabled={!!imagePreview}
+                      />
+                      {externalImageUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setExternalImageUrl('')}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500"
+                        >
+                          <FaTimes size={16} />
+                        </button>
+                      )}
+                    </div>
+                    {externalImageUrl && (
+                      <p className="mt-1 text-sm text-gray-400">
+                        External image will be used
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <div className="flex-grow border-t border-gray-700"></div>
+                    <span className="mx-4 text-sm text-gray-500">OR</span>
+                    <div className="flex-grow border-t border-gray-700"></div>
+                  </div>
+                  
+                  {/* File Upload */}
+                  {!imagePreview ? (
+                    <div className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                        id="image-upload"
+                        disabled={isUploading || !!externalImageUrl}
+                      />
+                      <label 
+                        htmlFor="image-upload"
+                        className={`cursor-pointer inline-block px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors ${(isUploading || !!externalImageUrl) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {isUploading ? 'Uploading...' : 'Choose Image'}
+                      </label>
+                      <p className="mt-2 text-sm text-gray-500">PNG, JPG, or GIF (max 5MB)</p>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <div className="relative w-full h-64">
+                        <Image 
+                          src={imagePreview} 
+                          alt="Preview" 
+                          className="rounded-lg object-contain"
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          unoptimized
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="absolute top-2 right-2 p-2 bg-red-600 rounded-full text-white hover:bg-red-700 transition-colors"
+                        aria-label="Remove image"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
               
               {/* Lecture Reference */}
