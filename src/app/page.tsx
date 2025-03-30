@@ -5,13 +5,14 @@ import { AnimatePresence } from "framer-motion";
 import Header from "./components/ui/Header";
 import ContentInput from "./components/ui/ContentInput";
 import ReelPlayer from "./components/reels/ReelPlayer";
+import Navigation from "./components/ui/Navigation";
 import { useReelStore } from "./store/useReelStore";
 
 export default function Home() {
   const { reels } = useReelStore();
   
   return (
-    <div className="flex flex-col min-h-screen bg-black">
+    <div className="flex flex-col min-h-screen bg-black pb-16">
       <Header />
       
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
@@ -48,6 +49,8 @@ export default function Home() {
       <AnimatePresence>
         {reels.length > 0 && <ReelPlayer />}
       </AnimatePresence>
+      
+      <Navigation />
     </div>
   );
 }
