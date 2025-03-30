@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaPlay, FaPause, FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 import { useReelStore } from '@/app/store/useReelStore';
 import Reel from './Reel';
 
@@ -20,6 +20,26 @@ const ReelPlayer: React.FC = () => {
   }
   
   const currentReel = reels[currentReelIndex];
+  
+  // Handle click/touch based on position
+  const handleInteraction = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { clientX, currentTarget } = e;
+    const { left, width } = currentTarget.getBoundingClientRect();
+    const position = (clientX - left) / width;
+    
+    // Left third of the screen - previous reel
+    if (position < 0.3) {
+      prevReel();
+    }
+    // Right third of the screen - next reel
+    else if (position > 0.7) {
+      nextReel();
+    }
+    // Middle third of the screen - toggle play/pause
+    else {
+      togglePlayback();
+    }
+  };
   
   return (
     <motion.div
@@ -43,41 +63,22 @@ const ReelPlayer: React.FC = () => {
         </button>
       </div>
       
-      {/* Reel Container */}
-      <div className="relative w-full h-full max-w-md mx-auto bg-gradient-to-b from-gray-900 to-black overflow-hidden">
+      {/* Reel Container with click/touch interaction */}
+      <div 
+        className="relative w-full h-full max-w-md mx-auto bg-gradient-to-b from-gray-900 to-black overflow-hidden"
+        onClick={handleInteraction}
+      >
         {reels.map((reel, index) => (
           <Reel key={reel.id} reel={reel} isActive={index === currentReelIndex} />
         ))}
         
-        {/* Navigation Controls */}
-        <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center space-x-8 z-10">
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={prevReel}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-          >
-            <FaChevronLeft className="text-white" />
-          </motion.button>
-          
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={togglePlayback}
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-[#ff3040] to-[#833ab4] hover:from-[#ff3040] hover:to-[#5851DB] transition-colors"
-          >
-            {isPlaying ? (
-              <FaPause className="text-white" />
-            ) : (
-              <FaPlay className="text-white ml-1" />
-            )}
-          </motion.button>
-          
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={nextReel}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-          >
-            <FaChevronRight className="text-white" />
-          </motion.button>
+        {/* Subtle visual indicators for interaction areas (only visible on hover) */}
+        <div className="absolute inset-0 opacity-0 hover:opacity-10 transition-opacity duration-300 pointer-events-none flex">
+          <div className="w-1/3 h-full bg-gradient-to-r from-white to-transparent" />
+          <div className="w-1/3 h-full flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full border-2 border-white opacity-50" />
+          </div>
+          <div className="w-1/3 h-full bg-gradient-to-l from-white to-transparent" />
         </div>
         
         {/* Progress indicators */}
