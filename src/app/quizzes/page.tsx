@@ -151,62 +151,69 @@ export default function QuizzesPage() {
   
   const currentQuestion = questions[currentQuestionIndex];
   
+  // Determine if a quiz is in progress - when questions are loaded and stats aren't showing yet
+  const quizInProgress = questions.length > 0 && !stats && !isLoading;
+  
   return (
     <div className="flex flex-col min-h-screen bg-black pb-16">
       <Header />
       
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
-        <div className="w-full max-w-3xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-8">
-            <div className="text-center sm:text-left mb-4 sm:mb-0">
-              <h1 className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-[#ff3040] via-[#fcaf45] to-[#833ab4] text-transparent bg-clip-text">
-                Interactive Quizzes
-              </h1>
-              <p className="text-gray-400 max-w-lg">
-                Test your knowledge with our interactive quizzes.
-              </p>
+        <div className={`w-full max-w-3xl mx-auto ${quizInProgress ? 'max-w-2xl' : ''}`}>
+          {!quizInProgress && (
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-8">
+              <div className="text-center sm:text-left mb-4 sm:mb-0">
+                <h1 className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-[#ff3040] via-[#fcaf45] to-[#833ab4] text-transparent bg-clip-text">
+                  Interactive Quizzes
+                </h1>
+                <p className="text-gray-400 max-w-lg">
+                  Test your knowledge with our interactive quizzes.
+                </p>
+              </div>
+              
+              <Link 
+                href="/quizzes/create"
+                className="flex items-center px-4 py-2 bg-[#ff3040] text-white rounded-lg hover:bg-[#e02030] transition-colors"
+              >
+                <FaPlus className="mr-2" />
+                Create Quiz
+              </Link>
             </div>
-            
-            <Link 
-              href="/quizzes/create"
-              className="flex items-center px-4 py-2 bg-[#ff3040] text-white rounded-lg hover:bg-[#e02030] transition-colors"
-            >
-              <FaPlus className="mr-2" />
-              Create Quiz
-            </Link>
-          </div>
+          )}
           
-          <div className="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800">
-            {/* Topic Selection */}
-            <div className="mb-6">
-              <label className="block text-gray-400 mb-2">Select a Topic:</label>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedTopic(null)}
-                  className={`px-4 py-2 rounded-full text-sm ${
-                    selectedTopic === null 
-                      ? 'bg-[#ff3040] text-white' 
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  All Topics
-                </button>
-                
-                {topics.map(topic => (
+          <div className={`bg-gray-900 rounded-xl ${quizInProgress ? 'p-4' : 'p-6'} shadow-lg border border-gray-800`}>
+            {/* Topic Selection - Only show when not in a quiz */}
+            {!quizInProgress && (
+              <div className="mb-6">
+                <label className="block text-gray-400 mb-2">Select a Topic:</label>
+                <div className="flex flex-wrap gap-2">
                   <button
-                    key={topic.id}
-                    onClick={() => setSelectedTopic(topic.id)}
+                    onClick={() => setSelectedTopic(null)}
                     className={`px-4 py-2 rounded-full text-sm ${
-                      selectedTopic === topic.id 
+                      selectedTopic === null 
                         ? 'bg-[#ff3040] text-white' 
                         : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                     }`}
                   >
-                    {topic.name}
+                    All Topics
                   </button>
-                ))}
+                  
+                  {topics.map(topic => (
+                    <button
+                      key={topic.id}
+                      onClick={() => setSelectedTopic(topic.id)}
+                      className={`px-4 py-2 rounded-full text-sm ${
+                        selectedTopic === topic.id 
+                          ? 'bg-[#ff3040] text-white' 
+                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                      }`}
+                    >
+                      {topic.name}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             
             {isLoading ? (
               <div className="flex justify-center items-center py-20">
@@ -249,6 +256,21 @@ export default function QuizzesPage() {
             ) : questions.length > 0 ? (
               // Quiz Questions
               <div>
+                {quizInProgress && (
+                  <button 
+                    onClick={() => {
+                      setQuestions([]);
+                      setCurrentQuestionIndex(0);
+                      setSelectedOption(null);
+                      setIsAnswered(false);
+                    }}
+                    className="mb-4 p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors flex items-center text-gray-400 hover:text-white"
+                    aria-label="Back to quiz selection"
+                  >
+                    <FaArrowRight className="transform rotate-180 mr-2" />
+                    <span>Exit Quiz</span>
+                  </button>
+                )}
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-sm text-gray-400">
                     Question {currentQuestionIndex + 1} of {questions.length}

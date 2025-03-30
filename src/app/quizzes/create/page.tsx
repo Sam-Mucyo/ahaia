@@ -199,6 +199,7 @@ export default function CreateQuizPage() {
             <Link 
               href="/quizzes"
               className="mr-4 p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+              aria-label="Back to quizzes"
             >
               <FaArrowLeft className="text-gray-400" />
             </Link>
